@@ -21,7 +21,9 @@ pnpm dev                     # http://localhost:3000
 | 명령                           | 설명                        |
 | ------------------------------ | --------------------------- |
 | `pnpm dev`                     | 개발 서버 (Turbopack)       |
-| `pnpm build`                   | 프로덕션 빌드               |
+| `pnpm index`                   | 콘텐츠 검증 + 색인 생성     |
+| `pnpm font`                    | 폰트 서브셋 생성            |
+| `pnpm build`                   | 색인 생성 후 프로덕션 빌드  |
 | `pnpm start`                   | 빌드 결과 실행              |
 | `pnpm lint`                    | ESLint (prettier 규칙 포함) |
 | `pnpm lint:fix`                | ESLint 자동 수정            |
@@ -40,14 +42,16 @@ src/
 │     ├─ [category]/[slug]/page.tsx
 │     ├─ tags/page.tsx · tags/[tag]/page.tsx
 │     ├─ archive/page.tsx
+│     ├─ search/page.tsx        검색 · 최근 검색 · 태그 · 글 그래프
 │     └─ about/page.tsx
 ├─ components/ lib/ styles/ types/
-├─ config/     images.json(★커밋 필수) · tag-alias.ts · id-redirects.json
+├─ config/     images.json(★커밋 필수) · tag-alias.ts · id-redirects.json · nav.ts · site.ts
 ├─ content/    MDX 정본 (Obsidian vault 겸용). 카테고리 = 폴더
 └─ data/       빌드 산출물 (gitignore)
 
 public/        Next 제약으로 루트 고정
-scripts/       upload-image.ts · build-index.ts
+scripts/       build-index.ts (pnpm index) · subset-font.ts (pnpm font)
+               upload-image.ts(미작성)
 docs/          상세 명세
 ```
 
@@ -55,20 +59,61 @@ docs/          상세 명세
 
 파일명 `YYYY-MM-DD-slug.mdx` → URL `/{category}/{slug}` (날짜 미포함).
 
+## 글 쓰기
+
+`src/content/`가 곧 Obsidian vault입니다. 별도 변환이나 업로드 단계가 없습니다.
+템플릿과 문법 · 검증 오류 대처는 **[docs/writing.md](docs/writing.md)** 에 있습니다.
+
+1. `src/content/<카테고리>/YYYY-MM-DD-slug.mdx` 생성
+2. frontmatter 다섯 개를 채운다. 미완성이면 `draft: true`로 둔다
+3. `pnpm dev` — 파일을 고치고 새로고침하면 바로 보인다 (watch 프로세스 없음)
+4. 다 쓰면 `draft: false` → git push
+
+**`draft`는 로컬에서만 보입니다.** 프로덕션 색인에 아예 굽지 않으므로 URL을 직접 쳐도 404입니다.
+
+**콜아웃**은 Obsidian 문법 그대로 다섯 종류 — `note` `tip` `warning` `danger` `quote`.
+나머지 종류는 뜻이 가까운 것으로 접히고 빌드 로그에 남습니다.
+
+```md
+> [!tip] 제목은 없어도 된다
+> 본문. [[2026-08-11-slug]] 또는 [[2026-08-11-slug|별칭]] 으로 다른 글을 잇는다.
+```
+
+목록의 출처는 환경마다 다릅니다 — dev는 `src/content` 직독,
+프로덕션 빌드는 `pnpm index`가 구운 `src/data/index.json`입니다.
+어느 쪽이든 화면은 `src/lib/posts.ts` 하나만 봅니다.
+
+## 폰트
+
+본문은 Pretendard 가변 폰트 하나만 씁니다. 코드는 시스템 mono 스택이라 파일이 없습니다.
+쓰는 굵기는 **400 · 500 · 600 · 700** 네 단계뿐입니다 (기울임 없음).
+
+`public/fonts/PretendardVariable.subset.woff2` 만 커밋합니다. 다시 만들려면 배포본의
+`PretendardVariable.woff2`(2MB)를 같은 폴더에 두고 `pnpm font` — 굵기 축을 400~700 으로
+좁히고 한글 완성형 · 라틴 · 문장부호만 남겨 절반 아래로 깎습니다. 한자는 빠져 있습니다
+(2만 자가 넘어 파일이 도로 커집니다. 필요하면 `scripts/subset-font.ts`의 범위를 켜세요).
+
 ## 규약
 
-- 필수 frontmatter 5개(`title` `date` `summary` `tags` `draft`)를 넘기지 않는다
+- frontmatter는 `title` `date` `summary` `tags` `draft` 다섯 개뿐이다.
+  다른 키가 있으면 `pnpm index`가 거부한다 (zod `strictObject`)
+- 이어 읽을 글은 frontmatter가 아니라 본문 `[[위키링크]]`에서 나온다.
+  Obsidian에서 글을 잇는 행위가 그대로 /search 그래프의 선이 된다.
+  한쪽에서만 걸어도 양쪽에 생기고, 가리키는 글이 없으면 경고만 남고 원문이 그대로 남는다
 - 카테고리는 폴더로만 결정한다 (frontmatter에 `category` 없음)
 - slug는 영문 소문자 + 하이픈
 - 발행 후 `post.id`(`category/slug`)를 바꾸지 않는다
 - UI · 아이콘 · 애니메이션 라이브러리를 쓰지 않는다
+  (예외 하나: 글 그래프의 좌표 계산에 쓰는 `d3-force`. 배치만 맡고 화면에서 돌지 않는다)
 - R2 이미지를 `next/image`에 물리지 않는다 (`<Img>` 직접 서빙)
 
 파일명 규칙은 ESLint가 강제한다 — `src/components/**`는 PascalCase, `**/hooks/**`는 camelCase.
 
 ## 미결정
 
-- 콘텐츠 빌드 도구 (velite vs content-collections) — 아직 설치하지 않음
-- 한국어 검색 라이브러리
+- 한국어 검색 라이브러리 — 지금은 제목 · 요약 · 태그 부분일치뿐이다 (`src/lib/search.ts`)
+- 분석 도구 (Plausible vs Umami vs Vercel Analytics) — 미설치.
+  붙으면 /search 글 그래프의 카테고리별 글 선정 기준을 최신순에서 조회수순으로
+  바꿀 수 있다. 선행 작업과 교체 지점은 `src/lib/posts.ts`의 `rankForGraph` 주석에 적어뒀다
 - 도메인 · 사이트 명칭
 - 디자인 토큰 (색 · 폰트 · 간격)
