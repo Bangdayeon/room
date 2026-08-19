@@ -1,0 +1,43 @@
+{
+  // 저장하면 Prettier 가 포맷한다. 규칙은 .prettierrc 하나뿐이라
+  // 에디터 · pnpm format · CI(format:check)가 항상 같은 결과를 낸다.
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // .prettierrc 가 없는 폴더에서는 포맷하지 않는다 — 남의 설정으로
+  // 이 저장소 밖 파일을 건드리는 사고를 막는다.
+  "prettier.requireConfig": true,
+
+  // import 정렬 · tailwind 클래스 정렬 플러그인은 .prettierrc 의 plugins 로
+  // 들어온다. VS Code 확장이 로컬 node_modules 의 prettier 를 쓰게 고정한다.
+  "prettier.prettierPath": "./node_modules/prettier",
+
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[markdown]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+  // 저장할 때 ESLint 가 고칠 수 있는 것(안 쓰는 import 등)도 같이 정리한다.
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.useFlatConfig": true,
+
+  // 줄바꿈은 LF 고정 (.prettierrc 의 endOfLine 과 .gitattributes 와 맞춘다).
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+
+  // 빌드 산출물은 검색 · 감시에서 뺀다.
+  "search.exclude": {
+    "**/.next": true,
+    "**/node_modules": true,
+    "**/pnpm-lock.yaml": true,
+    "src/data": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
+}
