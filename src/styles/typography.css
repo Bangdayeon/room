@@ -1,0 +1,135 @@
+/* ==========================================================================
+   타이포그래피 토큰
+   --------------------------------------------------------------------------
+   --text-* 를 수식자와 함께 선언하면 text-title-md 클래스 하나로
+   크기·행간·굵기·자간이 전부 적용되고 md: hover: 변형도 그대로 먹는다.
+   ========================================================================== */
+
+/* Pretendard Variable 서브셋. 파일은 public/fonts/ 에 직접 넣는다 (절대 규칙 15).
+
+   scripts/subset-font.ts(pnpm font)가 원본에서 깎아 만든다 — 한글 완성형 +
+   라틴 + 문장부호만 남기고, 굵기 축은 아래 선언과 같은 400~700 으로 좁힌다.
+   쓰는 굵기가 네 단계(400 · 500 · 600 · 700)뿐이라 Thin~Light 와 ExtraBold~Black
+   구간은 파일에 없다. 축 범위를 바꾸면 스크립트와 이 선언을 같이 고칠 것.
+
+   파일이 없으면 이 요청이 404 가 나고 font-display: swap 덕에 아래 폴백
+   스택으로 렌더된다 — 동작에 문제는 없다. */
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/fonts/PretendardVariable.subset.woff2') format('woff2-variations');
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@theme {
+  /* ---------- 폰트 패밀리 ---------- */
+  --font-sans:
+    'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo',
+    'Noto Sans KR', 'Malgun Gothic', sans-serif;
+
+  /* 코드는 웹폰트를 쓰지 않는다 — 시스템 스택이면 충분하고 서브셋 부담이 없다. */
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+  /* ---------- 폰트 굵기 ----------
+     Pretendard 에서 실제로 쓰는 4단계만 둔다. */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ---------- 텍스트 스케일 ----------
+     한글 장문 기준으로 본문 행간을 1.7~1.8 로 잡고,
+     큰 제목일수록 자간을 좁힌다.
+
+     반응형은 clamp() 로 한다. Tailwind 가 만든 유틸리티가 값을 복사하지 않고
+     font-size: var(--text-*) 로 참조하기 때문에, 토큰 하나만 clamp 로 바꿔도
+     text-title-lg 를 쓰는 모든 자리가 같이 따라온다 — md:text-title-md 같은
+     중단점 클래스를 화면마다 덧붙일 필요가 없다.
+
+     구간은 375px(모바일 기준선)에서 1280px 까지. 그 사이는 vw 로 매끄럽게
+     늘고 바깥은 잘린다. rem + vw 를 함께 쓰는 이유는 접근성이다 — vw 만
+     쓰면 브라우저 글자 크기 확대가 먹지 않는다.
+
+     줄이는 건 제목과 큰 본문뿐이다. 본문(16px) · 메타 · 버튼 · 네비는 이미
+     읽기 하한이라 좁은 화면에서 더 줄이면 손해만 본다. */
+
+  /* 제목 */
+  --text-display: clamp(1.875rem, 1.616rem + 1.105vw, 2.5rem); /* 30 → 40px — 메인 대형 타이틀 */
+  --text-display--line-height: 1.2;
+  --text-display--font-weight: 700;
+  --text-display--letter-spacing: -0.03em;
+
+  --text-title-lg: clamp(1.5rem, 1.345rem + 0.663vw, 1.875rem); /* 24 → 30px — 글 상세 h1 */
+  --text-title-lg--line-height: 1.3;
+  --text-title-lg--font-weight: 700;
+  --text-title-lg--letter-spacing: -0.025em;
+
+  --text-title-md: clamp(
+    1.25rem,
+    1.198rem + 0.221vw,
+    1.375rem
+  ); /* 20 → 22px — 섹션 h2 · 목록 글 제목 */
+  --text-title-md--line-height: 1.4;
+  --text-title-md--font-weight: 600;
+  --text-title-md--letter-spacing: -0.02em;
+
+  --text-title-sm: clamp(1.0625rem, 1.037rem + 0.111vw, 1.125rem); /* 17 → 18px — h3 */
+  --text-title-sm--line-height: 1.45;
+  --text-title-sm--font-weight: 600;
+  --text-title-sm--letter-spacing: -0.015em;
+
+  /* 본문 */
+  --text-body-lg: clamp(1rem, 0.948rem + 0.221vw, 1.125rem); /* 16 → 18px — 글 본문 (720px 컬럼) */
+  --text-body-lg--line-height: 1.8;
+  --text-body-lg--font-weight: 400;
+  --text-body-lg--letter-spacing: -0.01em;
+
+  --text-body: 1rem; /* 16px — 일반 본문 · 목록 요약 */
+  --text-body--line-height: 1.7;
+  --text-body--font-weight: 400;
+  --text-body--letter-spacing: -0.01em;
+
+  --text-body-sm: 0.9375rem; /* 15px — 보조 설명 */
+  --text-body-sm--line-height: 1.6;
+  --text-body-sm--font-weight: 400;
+  --text-body-sm--letter-spacing: -0.01em;
+
+  /* 메타 — 날짜 · 태그 · 카테고리.
+     색은 text-ink-muted 와 짝지어 쓴다. 단, 좌측 네비에는 쓰지 않는다
+     (브리프 7장 금지사항: 작은 회색 글씨). */
+  --text-meta: 0.8125rem; /* 13px */
+  --text-meta--line-height: 1.5;
+  --text-meta--font-weight: 500;
+  --text-meta--letter-spacing: 0.01em;
+
+  --text-meta-sm: 0.75rem; /* 12px — 본문 흐름에서의 최소 크기 */
+  --text-meta-sm--line-height: 1.4;
+  --text-meta-sm--font-weight: 500;
+  --text-meta-sm--letter-spacing: 0.02em;
+
+  /* 11px. 읽을 글이 아니라 그림 안의 이름표에만 쓴다 (예: /search 글 그래프의
+     카테고리 라벨). SVG 안의 글자는 viewBox 비율만큼 확대돼 그려지므로
+     11px 로 적어도 화면에서는 그보다 크게 나온다. 본문 · 메타 · 버튼에는
+     쓰지 않는다 — 그 자리의 하한은 meta-sm 이다. */
+  --text-meta-xs: 0.6875rem;
+  --text-meta-xs--line-height: 1.3;
+  --text-meta-xs--font-weight: 600;
+  --text-meta-xs--letter-spacing: 0.03em;
+
+  /* UI */
+  --text-label: 0.875rem; /* 14px — 버튼 · 폼 라벨 */
+  --text-label--line-height: 1.4;
+  --text-label--font-weight: 600;
+  --text-label--letter-spacing: 0;
+
+  --text-nav: 0.875rem; /* 14px — 좌측 네비 (DEV · DESIGN 대문자) */
+  --text-nav--line-height: 1.4;
+  --text-nav--font-weight: 500;
+  --text-nav--letter-spacing: 0.02em;
+
+  --text-code: 0.875rem; /* 14px — 인라인 · 블록 코드 */
+  --text-code--line-height: 1.7;
+  --text-code--font-weight: 400;
+  --text-code--letter-spacing: 0;
+}

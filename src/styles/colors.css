@@ -1,0 +1,368 @@
+/* ==========================================================================
+   색 토큰 — 스웨디시 · 쨍한 포인트 컬러
+   --------------------------------------------------------------------------
+   원칙 1. 중성색은 따뜻한 종이색이다. 순백(#ffffff)은 병원 느낌이고 장시간
+           읽기에 눈이 피로하다. 배경 #fbfaf7 · 본문 #1f1e1c.
+
+   원칙 2. 쨍한 색은 면으로 쓰고 글자는 먹색으로 둔다. 종이색 위에서 주황
+           2.72 · 초록 3.22 · 노랑 1.50 으로 전부 AA 미달이라 애초에 글자색이
+           될 수 없다. 그래서 각 색을 3단으로 나눈다.
+
+             vivid   면 · 도트 · 배지 배경.  글자색으로 쓰지 않는다
+             ink     같은 계열 글자색.       전부 AA 통과
+             subtle  연한 배경. 칩 · 배너
+
+   원칙 3. vivid 는 의미를 혼자 짊어지지 않는다. 목록의 카테고리 도트 옆에는
+           항상 카테고리 이름이 텍스트로 함께 있다. 색만으로 정보를 전달하는
+           UI 를 만들 거라면 그때는 대비를 다시 재야 한다.
+
+   원칙 4. 유채색은 포인트로만. 배경 · 본문 · 구분선은 전부 중성색이다.
+   ========================================================================== */
+
+:root {
+  /* ---------- 따뜻한 중성 램프 (유틸리티 미생성) ---------- */
+  --ramp-0: #fbfaf7; /* 종이색 */
+  --ramp-50: #f5f3ee;
+  --ramp-100: #ebe8e1;
+  --ramp-200: #e0dcd3;
+  --ramp-300: #cec9be;
+  --ramp-400: #a29d94;
+  --ramp-500: #6b6862;
+  --ramp-600: #504d47;
+  --ramp-700: #3a3833;
+  --ramp-800: #2a2825;
+  --ramp-900: #1f1e1c;
+  --ramp-950: #17161a; /* 따뜻한 어둠 */
+
+  /* ---------- 유채색 램프 ----------
+     각 색은 라이트/다크 각각 subtle · vivid · ink 3단.
+     -d 접미사가 다크용. 주석의 숫자는 해당 모드 배경 대비. */
+
+  /* blue — primary · dev */
+  --hue-blue-subtle: #e8f0fe;
+  --hue-blue-vivid: #0b63e5; /*  5.12 */
+  --hue-blue-ink: #144cb5; /*  7.37 */
+  --hue-blue-strong: #0a52bf; /*  6.77  hover */
+  --hue-blue-subtle-d: #111c33;
+  --hue-blue-vivid-d: #4a8bff; /*  5.51 */
+  --hue-blue-ink-d: #7aa9ff; /*  7.67 */
+  --hue-blue-strong-d: #6fa3ff; /*  7.17  hover */
+
+  /* purple — design */
+  --hue-purple-subtle: #f0eaff;
+  --hue-purple-vivid: #7a4de8; /*  4.96 */
+  --hue-purple-ink: #5f34c9; /*  7.13 */
+  --hue-purple-subtle-d: #1e1633;
+  --hue-purple-vivid-d: #9b7aff; /*  5.68 */
+  --hue-purple-ink-d: #b39bff; /*  7.76 */
+
+  /* red — review · error */
+  --hue-red-subtle: #ffecea;
+  --hue-red-vivid: #cf3b32; /*  4.65 · 흰 글자 4.86 */
+  --hue-red-ink: #c62f27; /*  5.24 */
+  --hue-red-subtle-d: #2e1512;
+  --hue-red-vivid-d: #f2554b; /*  5.30 */
+  --hue-red-ink-d: #ff8a80; /*  7.89 */
+
+  /* orange — log */
+  --hue-orange-subtle: #fff0e8;
+  --hue-orange-vivid: #ff6b2c; /*  2.72 · 면 전용. 위에 먹색 글자 5.86 */
+  --hue-orange-ink: #c04309; /*  4.97 */
+  --hue-orange-subtle-d: #2b1a10;
+  --hue-orange-vivid-d: #ff7d3d; /*  7.08 */
+  --hue-orange-ink-d: #ff9152; /*  8.08 */
+
+  /* yellow — toon · warning */
+  --hue-yellow-subtle: #fff8dd;
+  --hue-yellow-vivid: #ffc700; /*  1.50 · 면 전용. 위에 먹색 글자 10.65 */
+  --hue-yellow-ink: #8a5f00; /*  5.41 */
+  --hue-yellow-subtle-d: #2a2109;
+  --hue-yellow-vivid-d: #ffc700; /* 11.51 */
+  --hue-yellow-ink-d: #ffd633; /* 12.79 */
+
+  /* green — travel · success */
+  --hue-green-subtle: #e6f7ef;
+  --hue-green-vivid: #00a15c; /*  3.22 · 면 전용. 위에 먹색 글자 4.96 */
+  --hue-green-ink: #087f4c; /*  4.85 */
+  --hue-green-subtle-d: #0d2419;
+  --hue-green-vivid-d: #10b96c; /*  7.01 */
+  --hue-green-ink-d: #3ecf94; /*  9.05 */
+
+  /* ====================================================================
+     시맨틱 — 라이트
+     ==================================================================== */
+  color-scheme: light;
+
+  /* 텍스트. 괄호 안은 surface 대비 */
+  --sem-ink-strong: var(--ramp-950); /* 제목            17.25 */
+  --sem-ink: var(--ramp-900); /* 본문            15.96 */
+  --sem-ink-muted: var(--ramp-500); /* 메타·날짜·태그   5.32  AA 통과 */
+  --sem-ink-subtle: var(--ramp-400); /* 비활성·장식      2.58  AA 미달 */
+
+  /* 배경 */
+  --sem-surface: var(--ramp-0);
+  --sem-surface-subtle: var(--ramp-50);
+  --sem-surface-muted: var(--ramp-100);
+  --sem-surface-inverse: var(--ramp-900);
+
+  /* 구분선 */
+  --sem-line-subtle: var(--ramp-100);
+  --sem-line: var(--ramp-200);
+  --sem-line-strong: var(--ramp-300);
+
+  /* 액센트 — primary (blue) */
+  --sem-primary-subtle: var(--hue-blue-subtle);
+  --sem-primary: var(--hue-blue-vivid);
+  --sem-primary-strong: var(--hue-blue-strong);
+  --sem-primary-ink: var(--hue-blue-ink);
+  --sem-primary-on: var(--ramp-0); /* vivid 위 글자. 5.34 */
+
+  /* 피드백 */
+  --sem-error-subtle: var(--hue-red-subtle);
+  --sem-error: var(--hue-red-vivid);
+  --sem-error-ink: var(--hue-red-ink);
+  --sem-error-on: var(--ramp-0); /* 4.86 */
+
+  --sem-success-subtle: var(--hue-green-subtle);
+  --sem-success: var(--hue-green-vivid);
+  --sem-success-ink: var(--hue-green-ink);
+  --sem-success-on: var(--ramp-900); /* 초록 위에는 먹색. 4.96 */
+
+  --sem-warning-subtle: var(--hue-yellow-subtle);
+  --sem-warning: var(--hue-yellow-vivid);
+  --sem-warning-ink: var(--hue-yellow-ink);
+  --sem-warning-on: var(--ramp-900); /* 노랑 위에는 먹색. 10.65 */
+
+  /* 카테고리 — 목록 도트 · 상세 상단 띠 · 태그 칩.
+     피드백 색과 색상환을 공유한다 (dev=blue, review=red, travel=green,
+     toon=yellow). 맥락이 달라 혼동은 없지만, 한 화면에 에러 배너와
+     review 도트가 같이 놓이는 UI 를 만들 거라면 red 를 분리할 것. */
+  --sem-cat-dev: var(--hue-blue-vivid);
+  --sem-cat-dev-ink: var(--hue-blue-ink);
+  --sem-cat-dev-subtle: var(--hue-blue-subtle);
+
+  --sem-cat-design: var(--hue-purple-vivid);
+  --sem-cat-design-ink: var(--hue-purple-ink);
+  --sem-cat-design-subtle: var(--hue-purple-subtle);
+
+  --sem-cat-review: var(--hue-red-vivid);
+  --sem-cat-review-ink: var(--hue-red-ink);
+  --sem-cat-review-subtle: var(--hue-red-subtle);
+
+  --sem-cat-toon: var(--hue-yellow-vivid);
+  --sem-cat-toon-ink: var(--hue-yellow-ink);
+  --sem-cat-toon-subtle: var(--hue-yellow-subtle);
+
+  --sem-cat-travel: var(--hue-green-vivid);
+  --sem-cat-travel-ink: var(--hue-green-ink);
+  --sem-cat-travel-subtle: var(--hue-green-subtle);
+
+  --sem-cat-log: var(--hue-orange-vivid);
+  --sem-cat-log-ink: var(--hue-orange-ink);
+  --sem-cat-log-subtle: var(--hue-orange-subtle);
+}
+
+/* ====================================================================
+   시맨틱 — 다크
+   아래 두 블록은 값이 동일하다. 하나를 고치면 반드시 다른 하나도 고칠 것.
+
+   클래스가 없으면 OS 설정을 따르고, .light / .dark 가 붙으면 그게 이긴다.
+   그 클래스는 사이드바의 테마 선택이 붙인다 (lib/prefs.ts). 저장된 값은
+   <head> 인라인 스크립트가 첫 페인트 전에 되돌리므로 FOUC 는 없다.
+   ==================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    color-scheme: dark;
+
+    --sem-ink-strong: var(--ramp-0); /* 17.25 */
+    --sem-ink: var(--ramp-100); /* 14.72 */
+    --sem-ink-muted: var(--ramp-400); /*  6.68  AA 통과 */
+    --sem-ink-subtle: var(--ramp-600); /*  2.14  AA 미달 */
+
+    --sem-surface: var(--ramp-950);
+    --sem-surface-subtle: var(--ramp-900);
+    --sem-surface-muted: var(--ramp-800);
+    --sem-surface-inverse: var(--ramp-0);
+
+    --sem-line-subtle: var(--ramp-800);
+    --sem-line: var(--ramp-700);
+    --sem-line-strong: var(--ramp-600);
+
+    --sem-primary-subtle: var(--hue-blue-subtle-d);
+    --sem-primary: var(--hue-blue-vivid-d);
+    --sem-primary-strong: var(--hue-blue-strong-d);
+    --sem-primary-ink: var(--hue-blue-ink-d);
+    --sem-primary-on: var(--ramp-950);
+
+    --sem-error-subtle: var(--hue-red-subtle-d);
+    --sem-error: var(--hue-red-vivid-d);
+    --sem-error-ink: var(--hue-red-ink-d);
+    --sem-error-on: var(--ramp-950);
+
+    --sem-success-subtle: var(--hue-green-subtle-d);
+    --sem-success: var(--hue-green-vivid-d);
+    --sem-success-ink: var(--hue-green-ink-d);
+    --sem-success-on: var(--ramp-950);
+
+    --sem-warning-subtle: var(--hue-yellow-subtle-d);
+    --sem-warning: var(--hue-yellow-vivid-d);
+    --sem-warning-ink: var(--hue-yellow-ink-d);
+    --sem-warning-on: var(--ramp-950);
+
+    --sem-cat-dev: var(--hue-blue-vivid-d);
+    --sem-cat-dev-ink: var(--hue-blue-ink-d);
+    --sem-cat-dev-subtle: var(--hue-blue-subtle-d);
+
+    --sem-cat-design: var(--hue-purple-vivid-d);
+    --sem-cat-design-ink: var(--hue-purple-ink-d);
+    --sem-cat-design-subtle: var(--hue-purple-subtle-d);
+
+    --sem-cat-review: var(--hue-red-vivid-d);
+    --sem-cat-review-ink: var(--hue-red-ink-d);
+    --sem-cat-review-subtle: var(--hue-red-subtle-d);
+
+    --sem-cat-toon: var(--hue-yellow-vivid-d);
+    --sem-cat-toon-ink: var(--hue-yellow-ink-d);
+    --sem-cat-toon-subtle: var(--hue-yellow-subtle-d);
+
+    --sem-cat-travel: var(--hue-green-vivid-d);
+    --sem-cat-travel-ink: var(--hue-green-ink-d);
+    --sem-cat-travel-subtle: var(--hue-green-subtle-d);
+
+    --sem-cat-log: var(--hue-orange-vivid-d);
+    --sem-cat-log-ink: var(--hue-orange-ink-d);
+    --sem-cat-log-subtle: var(--hue-orange-subtle-d);
+  }
+}
+
+.dark {
+  color-scheme: dark;
+
+  --sem-ink-strong: var(--ramp-0);
+  --sem-ink: var(--ramp-100);
+  --sem-ink-muted: var(--ramp-400);
+  --sem-ink-subtle: var(--ramp-600);
+
+  --sem-surface: var(--ramp-950);
+  --sem-surface-subtle: var(--ramp-900);
+  --sem-surface-muted: var(--ramp-800);
+  --sem-surface-inverse: var(--ramp-0);
+
+  --sem-line-subtle: var(--ramp-800);
+  --sem-line: var(--ramp-700);
+  --sem-line-strong: var(--ramp-600);
+
+  --sem-primary-subtle: var(--hue-blue-subtle-d);
+  --sem-primary: var(--hue-blue-vivid-d);
+  --sem-primary-strong: var(--hue-blue-strong-d);
+  --sem-primary-ink: var(--hue-blue-ink-d);
+  --sem-primary-on: var(--ramp-950);
+
+  --sem-error-subtle: var(--hue-red-subtle-d);
+  --sem-error: var(--hue-red-vivid-d);
+  --sem-error-ink: var(--hue-red-ink-d);
+  --sem-error-on: var(--ramp-950);
+
+  --sem-success-subtle: var(--hue-green-subtle-d);
+  --sem-success: var(--hue-green-vivid-d);
+  --sem-success-ink: var(--hue-green-ink-d);
+  --sem-success-on: var(--ramp-950);
+
+  --sem-warning-subtle: var(--hue-yellow-subtle-d);
+  --sem-warning: var(--hue-yellow-vivid-d);
+  --sem-warning-ink: var(--hue-yellow-ink-d);
+  --sem-warning-on: var(--ramp-950);
+
+  --sem-cat-dev: var(--hue-blue-vivid-d);
+  --sem-cat-dev-ink: var(--hue-blue-ink-d);
+  --sem-cat-dev-subtle: var(--hue-blue-subtle-d);
+
+  --sem-cat-design: var(--hue-purple-vivid-d);
+  --sem-cat-design-ink: var(--hue-purple-ink-d);
+  --sem-cat-design-subtle: var(--hue-purple-subtle-d);
+
+  --sem-cat-review: var(--hue-red-vivid-d);
+  --sem-cat-review-ink: var(--hue-red-ink-d);
+  --sem-cat-review-subtle: var(--hue-red-subtle-d);
+
+  --sem-cat-toon: var(--hue-yellow-vivid-d);
+  --sem-cat-toon-ink: var(--hue-yellow-ink-d);
+  --sem-cat-toon-subtle: var(--hue-yellow-subtle-d);
+
+  --sem-cat-travel: var(--hue-green-vivid-d);
+  --sem-cat-travel-ink: var(--hue-green-ink-d);
+  --sem-cat-travel-subtle: var(--hue-green-subtle-d);
+
+  --sem-cat-log: var(--hue-orange-vivid-d);
+  --sem-cat-log-ink: var(--hue-orange-ink-d);
+  --sem-cat-log-subtle: var(--hue-orange-subtle-d);
+}
+
+/* ====================================================================
+   Tailwind 유틸리티 생성
+   inline 이어야 유틸리티가 값을 복사하지 않고 var() 를 그대로 참조한다.
+   그래야 .dark 에서 변수만 바꿔도 색이 전환된다.
+   램프(--ramp-* · --hue-*)는 여기 없으므로 유틸리티가 만들어지지 않는다.
+   ==================================================================== */
+
+@theme inline {
+  --color-ink-strong: var(--sem-ink-strong);
+  --color-ink: var(--sem-ink);
+  --color-ink-muted: var(--sem-ink-muted);
+  --color-ink-subtle: var(--sem-ink-subtle);
+
+  --color-surface: var(--sem-surface);
+  --color-surface-subtle: var(--sem-surface-subtle);
+  --color-surface-muted: var(--sem-surface-muted);
+  --color-surface-inverse: var(--sem-surface-inverse);
+
+  --color-line-subtle: var(--sem-line-subtle);
+  --color-line: var(--sem-line);
+  --color-line-strong: var(--sem-line-strong);
+
+  --color-primary-subtle: var(--sem-primary-subtle);
+  --color-primary: var(--sem-primary);
+  --color-primary-strong: var(--sem-primary-strong);
+  --color-primary-ink: var(--sem-primary-ink);
+  --color-primary-on: var(--sem-primary-on);
+
+  --color-error-subtle: var(--sem-error-subtle);
+  --color-error: var(--sem-error);
+  --color-error-ink: var(--sem-error-ink);
+  --color-error-on: var(--sem-error-on);
+
+  --color-success-subtle: var(--sem-success-subtle);
+  --color-success: var(--sem-success);
+  --color-success-ink: var(--sem-success-ink);
+  --color-success-on: var(--sem-success-on);
+
+  --color-warning-subtle: var(--sem-warning-subtle);
+  --color-warning: var(--sem-warning);
+  --color-warning-ink: var(--sem-warning-ink);
+  --color-warning-on: var(--sem-warning-on);
+
+  --color-cat-dev: var(--sem-cat-dev);
+  --color-cat-dev-ink: var(--sem-cat-dev-ink);
+  --color-cat-dev-subtle: var(--sem-cat-dev-subtle);
+
+  --color-cat-design: var(--sem-cat-design);
+  --color-cat-design-ink: var(--sem-cat-design-ink);
+  --color-cat-design-subtle: var(--sem-cat-design-subtle);
+
+  --color-cat-review: var(--sem-cat-review);
+  --color-cat-review-ink: var(--sem-cat-review-ink);
+  --color-cat-review-subtle: var(--sem-cat-review-subtle);
+
+  --color-cat-toon: var(--sem-cat-toon);
+  --color-cat-toon-ink: var(--sem-cat-toon-ink);
+  --color-cat-toon-subtle: var(--sem-cat-toon-subtle);
+
+  --color-cat-travel: var(--sem-cat-travel);
+  --color-cat-travel-ink: var(--sem-cat-travel-ink);
+  --color-cat-travel-subtle: var(--sem-cat-travel-subtle);
+
+  --color-cat-log: var(--sem-cat-log);
+  --color-cat-log-ink: var(--sem-cat-log-ink);
+  --color-cat-log-subtle: var(--sem-cat-log-subtle);
+}
