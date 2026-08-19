@@ -1,0 +1,28 @@
+# 빌드 디렉토리
+.next
+out
+dist
+
+# 의존성
+node_modules
+pnpm-lock.yaml
+
+# 빌드 산출물 (build-index.ts 생성)
+src/data
+
+# 정적 파일
+public
+*.svg
+*.png
+*.woff
+*.woff2
+
+# 콘텐츠 정본 — 프로그램이 MDX를 수정하지 않는다 (절대 규칙 6)
+src/content
+
+# Git 관련
+.git
+.github
+
+# Obsidian
+.obsidian
