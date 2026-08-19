@@ -1,4 +1,32 @@
+import Link from 'next/link';
+
+import { getAllPosts } from '@/lib/posts';
+
+import { PostList } from '@/components/PostList';
+
+/** 홈에 세울 최신 글. 그 뒤는 아카이브가 맡는다. */
+const LATEST = 10;
+
 export default function HomePage() {
-  // Phase 1: 최신 글 목록. Phase 2 에서 대시보드로 바뀐다.
-  return <main>room</main>;
+  const posts = getAllPosts();
+
+  return (
+    <main className="mx-auto w-full max-w-[820px] px-6 py-10">
+      <h1 className="text-title-lg text-ink-strong mb-1">최근 글</h1>
+      <p className="text-meta text-ink-muted mb-6">전체 {posts.length}편</p>
+
+      <PostList posts={posts.slice(0, LATEST)} />
+
+      {posts.length > LATEST && (
+        <p className="mt-8 text-center">
+          <Link
+            href="/archive"
+            className="text-meta text-ink hover:bg-surface-subtle border-line focus-visible:outline-primary rounded-lg border px-3 py-1.5 focus-visible:outline-2"
+          >
+            전체 보기
+          </Link>
+        </p>
+      )}
+    </main>
+  );
 }

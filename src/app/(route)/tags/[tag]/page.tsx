@@ -1,8 +1,34 @@
-// TODO: generateStaticParams — src/data/stats.json 의 tagFreq 키로 전량 정적 생성.
+import type { Metadata } from 'next';
 
-export default async function TagPage({ params }: { params: Promise<{ tag: string }> }) {
+import { getPostsByTag, getTagCounts } from '@/lib/posts';
+
+import { PostList } from '@/components/PostList';
+
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return getTagCounts().map(({ tag }) => ({ tag: encodeURIComponent(tag) }));
+}
+
+type Params = { params: Promise<{ tag: string }> };
+
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { tag } = await params;
+  return { title: `#${decodeURIComponent(tag)}` };
+}
 
-  // TODO: 해당 태그의 글 목록. config/tag-alias.ts 로 정규화된 태그 기준.
-  return <main>{decodeURIComponent(tag)}</main>;
+export default async function TagPage({ params }: Params) {
+  const { tag } = await params;
+  // config/tag-alias.ts 로 정규화된 태그가 색인에 들어 있으므로 여기서는 그대로 쓴다.
+  const name = decodeURIComponent(tag);
+  const posts = getPostsByTag(name);
+
+  return (
+    <main className="mx-auto w-full max-w-[820px] px-6 py-10">
+      <h1 className="text-title-lg text-ink-strong mb-1">{name}</h1>
+      <p className="text-meta text-ink-muted mb-6">{posts.length}편</p>
+
+      <PostList posts={posts} emptyText="이 태그의 글이 없다." />
+    </main>
+  );
 }
