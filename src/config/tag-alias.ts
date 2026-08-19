@@ -6,3 +6,8 @@
  * 예: { 'js': 'javascript', '넷플릭스': 'netflix' }
  */
 export const tagAlias: Record<string, string> = {};
+
+/** 별칭이면 정본으로, 아니면 그대로. 글을 읽는 모든 경로가 이 함수를 지난다. */
+export function normalizeTag(tag: string): string {
+  return tagAlias[tag] ?? tag;
+}
